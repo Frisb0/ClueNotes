@@ -1,4 +1,4 @@
-name: ClueNotes
+name: clue_notes
 description: "A Clue/Cluedo note-taking app migrated from Kotlin Compose."
 publish_to: 'none'
 version: 1.0.0+1
