@@ -4,12 +4,10 @@
 
 ¡Optimiza tus deducciones y conviértete en el mejor detective de la partida con un código base multiplataforma moderno!
 
-<p align="center">
-  <img width="220" alt="Paso 0: Selección de Personaje" src="https://github.com/user-attachments/assets/231bf118-d1eb-4403-86b6-99367c04c8b7" />
-  <img width="220" alt="Paso 1: Nombres de Oponentes" src="https://github.com/user-attachments/assets/06c9c2c2-d18c-4286-80c3-d0c51f318c88" />
-  <img width="220" alt="Paso 2: Planilla de Notas" src="https://github.com/user-attachments/assets/1bc4baba-1aa7-4501-b41a-d8d8dd872fd8" />
-  <img width="220" alt="Diálogo de Guía" src="https://github.com/user-attachments/assets/63dd3468-88b7-427a-b290-e8bb6cc7a839" />
-</p>
+<img width="200" height="600" alt="image" src="https://github.com/user-attachments/assets/231bf118-d1eb-4403-86b6-99367c04c8b7" />
+<img width="200" height="600" alt="image" src="https://github.com/user-attachments/assets/06c9c2c2-d18c-4286-80c3-d0c51f318c88" />
+<img width="200" height="600" alt="image" src="https://github.com/user-attachments/assets/1bc4baba-1aa7-4501-b41a-d8d8dd872fd8" />
+<img width="200" height="600" alt="image" src="https://github.com/user-attachments/assets/63dd3468-88b7-427a-b290-e8bb6cc7a839" />
 
 ---
 
