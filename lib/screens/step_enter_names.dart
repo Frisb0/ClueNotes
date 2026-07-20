@@ -144,7 +144,7 @@ class _StepEnterNamesState extends State<StepEnterNames> {
                                   ? () => widget.onNext(_controllers.map((c) => c.text.trim()).toList())
                                   : null,
                               child: Text(
-                                "EMPEZAR",
+                                "SIGUIENTE",
                                 style: TextStyle(
                                   color: _isAllFilled 
                                       ? (widget.selectedChar.color.computeLuminance() > 0.5 ? Colors.black : Colors.white)
