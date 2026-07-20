@@ -287,13 +287,13 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
   Widget _buildClueRowView(ClueRowState state) {
     Color rowOverlay = Colors.transparent;
     if (state.nameStatus == 1) {
-      rowOverlay = handOrange.withOpacity(0.2);
+      rowOverlay = handOrange.withValues(alpha: 0.2);
     } else if (state.nameStatus == 2) {
-      rowOverlay = strikeRed.withOpacity(0.2);
+      rowOverlay = strikeRed.withValues(alpha: 0.2);
     } else if (state.nameStatus == 3) {
-      rowOverlay = confirmGreen.withOpacity(0.2);
+      rowOverlay = confirmGreen.withValues(alpha: 0.2);
     } else if (state.isHighProbability) {
-      rowOverlay = probabilityGold.withOpacity(0.2);
+      rowOverlay = probabilityGold.withValues(alpha: 0.2);
     }
 
     return Container(
@@ -304,29 +304,24 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
       height: 60,
       child: Row(
         children: [
-          // Nombre del ítem
           Expanded(
             flex: 2,
-            child: InkWell(
-              onTap: () => state.toggleStatus(),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  state.name + (state.isHighProbability ? " ⚡" : ""),
-                  style: TextStyle(
-                    decoration: (state.nameStatus == 1 || state.nameStatus == 2)
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                    color: _getRowTextColor(state),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                state.name + (state.isHighProbability ? " ⚡" : ""),
+                style: TextStyle(
+                  decoration: (state.nameStatus == 1 || state.nameStatus == 2)
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                  color: _getRowTextColor(state),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ),
           ),
-          // Casillas de descarte de los oponentes
           ...List.generate(state.playerStates.length, (i) {
             Widget cellContent = const SizedBox(); 
 

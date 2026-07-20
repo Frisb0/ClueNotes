@@ -5,6 +5,7 @@ import 'models/clue_row_state.dart';
 import 'screens/clue_sheet_screen.dart';
 import 'screens/step_select_count.dart';
 import 'screens/step_enter_names.dart';
+import 'screens/step_select_hand.dart';
 
 // --- COLORES ---
 const Color darkBackground = Color(0xFF000000);
@@ -54,7 +55,7 @@ class ClueApp extends StatefulWidget {
 }
 
 class _ClueAppState extends State<ClueApp> {
-  int _currentStep = 0;
+  int _currentStep = 0; 
   int _totalPlayers = 4;
   ClueCharacter _selectedChar = cluePalette[0];
   List<String> _opponentNames = [];
@@ -71,7 +72,7 @@ class _ClueAppState extends State<ClueApp> {
         .map((name) => ClueRowState(name, opponentsCount))
         .toList();
     _lug = [
-      "Sala baile", "Sala billar", "Terraza", "Comedor", "Pasillo",
+      "Salón baile", "Sala billar", "Terraza", "Comedor", "Pasillo",
       "Cocina", "Biblioteca", "Sala", "Estudio"
     ].map((name) => ClueRowState(name, opponentsCount)).toList();
   }
@@ -91,7 +92,7 @@ class _ClueAppState extends State<ClueApp> {
           SafeArea(
             child: _buildCurrentStepView(),
           ),
-          if (_currentStep < 2)
+          if (_currentStep < 3)
             Positioned(
               top: 8,
               right: 8,
@@ -141,11 +142,28 @@ class _ClueAppState extends State<ClueApp> {
             setState(() {
               _opponentNames = names;
               _initializeStates(names.length);
-              _currentStep = 2;
+              _currentStep = 2; // Avanza a la pantalla de Selección de Mano Inicial
             });
           },
         );
       case 2:
+        return StepSelectHand(
+          selectedChar: _selectedChar,
+          sos: _sos,
+          arm: _arm,
+          lug: _lug,
+          onBack: () {
+            setState(() {
+              _currentStep = 1;
+            });
+          },
+          onNext: () {
+            setState(() {
+              _currentStep = 3; // Inicia la partida e ingresa a la planilla principal
+            });
+          },
+        );
+      case 3:
         return ClueSheetScreen(
           opponents: _opponentNames,
           selectedChar: _selectedChar,
