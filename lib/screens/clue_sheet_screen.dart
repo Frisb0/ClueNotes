@@ -285,8 +285,10 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
   }
 
   Widget _buildClueRowView(ClueRowState state) {
+    final bool isHandCard = state.nameStatus == 1; // 👈 Identifica si es carta de tu mano
+
     Color rowOverlay = Colors.transparent;
-    if (state.nameStatus == 1) {
+    if (isHandCard) {
       rowOverlay = handOrange.withValues(alpha: 0.2);
     } else if (state.nameStatus == 2) {
       rowOverlay = strikeRed.withValues(alpha: 0.2);
@@ -304,6 +306,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
       height: 60,
       child: Row(
         children: [
+          // Nombre del ítem (Bloqueado para edición desde la tabla)
           Expanded(
             flex: 2,
             child: Container(
@@ -322,8 +325,9 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
               ),
             ),
           ),
+          // Casillas de descarte de los oponentes
           ...List.generate(state.playerStates.length, (i) {
-            Widget cellContent = const SizedBox(); 
+            Widget cellContent = const SizedBox();
 
             if (state.playerStates[i] == 1) {
               cellContent = const Text(
@@ -353,7 +357,8 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
 
             return Expanded(
               child: InkWell(
-                onTap: () => state.updatePlayerState(i),
+                // 👈 Si es carta de tu mano, deshabilitamos la interacción por completo (onTap: null)
+                onTap: isHandCard ? null : () => state.updatePlayerState(i),
                 child: Container(
                   decoration: const BoxDecoration(
                     border: Border(left: BorderSide(color: rowDivider, width: 0.2)),
