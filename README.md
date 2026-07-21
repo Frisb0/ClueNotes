@@ -4,6 +4,11 @@
 
 ¡Optimiza tus deducciones y conviértete en el mejor detective de la partida con un código base multiplataforma moderno!
 
+<img width="200" height="400" alt="photo_2026-07-20_23-12-26" src="https://github.com/user-attachments/assets/4142dac7-89da-46e3-afa6-1b1286b31531" />
+<img width="200" height="400" alt="photo_2026-07-20_23-12-28" src="https://github.com/user-attachments/assets/724bc9fa-b9fc-4868-8c0d-5f80644b9828" />
+<img width="200" height="400" alt="photo_2026-07-20_23-12-29" src="https://github.com/user-attachments/assets/77acfb96-4593-426c-ae0c-6b2a6893a515" />
+<img width="200" height="400" alt="photo_2026-07-20_23-12-31" src="https://github.com/user-attachments/assets/627ce0a9-108a-4ac3-a018-bfecbcad84ec" />
+
 ---
 
 ## ✨ Características Principales
