@@ -3,14 +3,15 @@ import '../models/clue_character.dart';
 import '../models/clue_row_state.dart';
 import '../main.dart';
 
+/// Pantalla Principal de la Partida: Dibuja la matriz interactiva de deducción.
 class ClueSheetScreen extends StatefulWidget {
-  final List<String> opponents;
-  final ClueCharacter selectedChar;
-  final List<ClueRowState> sos;
-  final List<ClueRowState> arm;
-  final List<ClueRowState> lug;
-  final VoidCallback onOpenTutorial;
-  final VoidCallback onRestart;
+  final List<String> opponents;       // Lista con los nombres de los rivales (encabezados de columna).
+  final ClueCharacter selectedChar;   // Personaje activo (aporta el color temático de la UI).
+  final List<ClueRowState> sos;       // Filas de Sospechosos.
+  final List<ClueRowState> arm;       // Filas de Armas.
+  final List<ClueRowState> lug;       // Filas de Lugares.
+  final VoidCallback onOpenTutorial;  // Callback para invocar el tutorial desde la AppBar.
+  final VoidCallback onRestart;       // Callback para reiniciar la partida y volver al setup.
 
   const ClueSheetScreen({
     super.key,
@@ -28,6 +29,8 @@ class ClueSheetScreen extends StatefulWidget {
 }
 
 class _ClueSheetScreenState extends State<ClueSheetScreen> {
+  // --- ESTADO LOCAL DE ACORDEONES ---
+  // Controla si cada sección de la tabla está desplegada (true) o colapsada (false).
   bool _expandedWho = true;
   bool _expandedWhat = true;
   bool _expandedWhere = true;
@@ -35,23 +38,28 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
   @override
   void initState() {
     super.initState();
+    // CICLO DE VIDA: Escucha cambios en los modelos `ClueRowState`.
+    // Cuando un modelo ejecuta `notifyListeners()`, invocamos `_onRowChanged` para actualizar la vista.
     for (var row in [...widget.sos, ...widget.arm, ...widget.lug]) {
       row.addListener(_onRowChanged);
     }
   }
 
+  /// Función que fuerza el rediseño de la pantalla si el widget sigue montado en el árbol de Flutter.
   void _onRowChanged() {
     if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    // LIMPIEZA DE MEMORIA: Remueve los escuchadores cuando la pantalla se destruye para evitar memory leaks.
     for (var row in [...widget.sos, ...widget.arm, ...widget.lug]) {
       row.removeListener(_onRowChanged);
     }
     super.dispose();
   }
 
+  /// Despliega el modal de confirmación antes de borrar la partida activa.
   void _showResetDialog() {
     showDialog(
       context: context,
@@ -69,7 +77,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              widget.onRestart();
+              widget.onRestart(); // Ejecuta el reinicio enviado desde main.dart.
             },
             child: const Text(
               "SÍ, BORRAR", 
@@ -81,6 +89,8 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
     );
   }
 
+  /// REGLA DE VEREDICTO: Filtra qué elementos están marcados como solución (Estado 3 / Verde)
+  /// y los presenta en un modal como la acusación final.
   void _showVeredictDialog() {
     final killer = widget.sos.firstWhere((e) => e.nameStatus == 3, orElse: () => ClueRowState("???", 0)).name;
     final weapon = widget.arm.firstWhere((e) => e.nameStatus == 3, orElse: () => ClueRowState("???", 0)).name;
@@ -124,6 +134,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
     );
   }
 
+  /// Helper visual para renderizar cada línea del Veredicto Final.
   Widget _buildVeredictRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -145,6 +156,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // `PopScope` intercepta el botón nativo de "Atrás" del teléfono para evitar salir por accidente.
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -157,7 +169,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.help_outline, color: widget.selectedChar.color, size: 28),
-            onPressed: widget.onOpenTutorial,
+            onPressed: widget.onOpenTutorial, // Abre la guía desde el ícono de la izquierda.
           ),
           centerTitle: true,
           title: Text(
@@ -171,10 +183,11 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
           actions: [
             IconButton(
               icon: Icon(Icons.refresh, color: widget.selectedChar.color, size: 30),
-              onPressed: _showResetDialog,
+              onPressed: _showResetDialog, // Botón de reinicio a la derecha.
             ),
           ],
         ),
+        // Botón Flotante (Mazo de Juez) para desplegar la acusación/resumen de la partida.
         floatingActionButton: SizedBox(
           width: 70,
           height: 70,
@@ -191,7 +204,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
         ),
         body: Column(
           children: [
-            // Header de la tabla
+            // --- ENCABEZADO DE LA TABLA (Muestra los nombres de los oponentes) ---
             Container(
               color: surfaceColor,
               padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
@@ -208,6 +221,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
                       ),
                     ),
                   ),
+                  // Mapea la lista de oponentes para crear los títulos de las columnas:
                   ...widget.opponents.map((name) {
                     return Expanded(
                       child: Text(
@@ -226,19 +240,24 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
                 ],
               ),
             ),
-            // Secciones Colapsables
+            // --- LISTADO CON SECCIONES ACORDEÓN ---
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.only(left: 4, right: 4, bottom: 100),
                 children: [
+                  // Acordeón Sospechosos
                   _buildAccordionHeader("¿QUIÉN FUE?", _expandedWho, () {
                     setState(() => _expandedWho = !_expandedWho);
                   }),
                   if (_expandedWho) ...widget.sos.map((state) => _buildClueRowView(state)),
+
+                  // Acordeón Armas
                   _buildAccordionHeader("¿CON QUÉ?", _expandedWhat, () {
                     setState(() => _expandedWhat = !_expandedWhat);
                   }),
                   if (_expandedWhat) ...widget.arm.map((state) => _buildClueRowView(state)),
+
+                  // Acordeón Lugares
                   _buildAccordionHeader("¿DÓNDE?", _expandedWhere, () {
                     setState(() => _expandedWhere = !_expandedWhere);
                   }),
@@ -252,6 +271,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
     );
   }
 
+  /// Construye los títulos interactivos que permiten colapsar y expandir secciones de la tabla.
   Widget _buildAccordionHeader(String title, bool isExpanded, VoidCallback onTap) {
     return Column(
       children: [
@@ -284,18 +304,20 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
     );
   }
 
+  /// RENDERIZADO DE FILA: Dibuja el nombre de la carta y las casillas interactivas para cada oponente.
   Widget _buildClueRowView(ClueRowState state) {
-    final bool isHandCard = state.nameStatus == 1; // 👈 Identifica si es carta de tu mano
+    final bool isHandCard = state.nameStatus == 1; // Verifica si es carta de tu mano inicial.
 
+    // Determina el color de fondo de la fila según su estado lógico:
     Color rowOverlay = Colors.transparent;
     if (isHandCard) {
-      rowOverlay = handOrange.withValues(alpha: 0.2);
+      rowOverlay = handOrange.withValues(alpha: 0.2); // Naranja (Mano)
     } else if (state.nameStatus == 2) {
-      rowOverlay = strikeRed.withValues(alpha: 0.2);
+      rowOverlay = strikeRed.withValues(alpha: 0.2);   // Rojo (Descarte)
     } else if (state.nameStatus == 3) {
-      rowOverlay = confirmGreen.withValues(alpha: 0.2);
+      rowOverlay = confirmGreen.withValues(alpha: 0.2); // Verde (Veredicto)
     } else if (state.isHighProbability) {
-      rowOverlay = probabilityGold.withValues(alpha: 0.2);
+      rowOverlay = probabilityGold.withValues(alpha: 0.2); // Dorado (Alta probabilidad)
     }
 
     return Container(
@@ -306,7 +328,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
       height: 60,
       child: Row(
         children: [
-          // Nombre del ítem (Bloqueado para edición desde la tabla)
+          // COLUMNA 1: Nombre de la carta (Modificación bloqueada desde la tabla).
           Expanded(
             flex: 2,
             child: Container(
@@ -325,39 +347,23 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
               ),
             ),
           ),
-          // Casillas de descarte de los oponentes
+          // COLUMNAS RESTANTES: Casillas de descarte por cada oponente.
           ...List.generate(state.playerStates.length, (i) {
             Widget cellContent = const SizedBox();
 
+            // Mapea el número de estado de la casilla a un símbolo visual:
             if (state.playerStates[i] == 1) {
-              cellContent = const Text(
-                "?",
-                style: TextStyle(
-                  color: infoBlue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-              );
+              cellContent = const Text("?", style: TextStyle(color: infoBlue, fontWeight: FontWeight.bold, fontSize: 22));
             } else if (state.playerStates[i] == 2) {
-              cellContent = const Text(
-                "X",
-                style: TextStyle(
-                  color: strikeRed,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-              );
+              cellContent = const Text("X", style: TextStyle(color: strikeRed, fontWeight: FontWeight.bold, fontSize: 22));
             } else if (state.playerStates[i] == 3) {
-              cellContent = const Icon(
-                Icons.check,
-                color: confirmGreen,
-                size: 26,
-              );
+              cellContent = const Icon(Icons.check, color: confirmGreen, size: 26);
             }
 
             return Expanded(
               child: InkWell(
-                // 👈 Si es carta de tu mano, deshabilitamos la interacción por completo (onTap: null)
+                // BLOQUEO SEGURIDAD: Si es carta de la mano propia (`isHandCard`), deshabilita el click (`null`).
+                // De lo contrario, ejecuta el avance de estado de la casilla (`updatePlayerState`).
                 onTap: isHandCard ? null : () => state.updatePlayerState(i),
                 child: Container(
                   decoration: const BoxDecoration(
@@ -374,6 +380,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
     );
   }
 
+  /// Retorna el color adecuado para la tipografía según el estado de la fila.
   Color _getRowTextColor(ClueRowState state) {
     if (state.nameStatus == 1) return handOrange;
     if (state.nameStatus == 2) return strikeRed;
@@ -382,6 +389,7 @@ class _ClueSheetScreenState extends State<ClueSheetScreen> {
     return textPrimary;
   }
 
+  /// Modal de advertencia cuando el usuario intenta retroceder con el botón nativo del teléfono.
   void _showExitDialog() {
     showDialog(
       context: context,
